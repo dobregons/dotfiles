@@ -1,0 +1,22 @@
+[profile jupiterone]
+region = us-east-1
+
+[profile jupiterone-infra]
+region = us-east-1
+role_arn = arn:aws:iam::081157560428:role/Developer
+source_profile = jupiterone
+
+[profile jupiterone-dev]
+region = us-east-1
+role_arn = arn:aws:iam::564077667165:role/Administrator
+source_profile = jupiterone
+
+[profile jupiterone-prod-us]
+region = us-east-2
+role_arn = arn:aws:iam::612791702201:role/Administrator
+source_profile = jupiterone
+
+[profile jupiterone-archive]
+region = us-east-1
+role_arn = arn:aws:iam::123332750105:role/Administrator
+source_profile = jupiterone

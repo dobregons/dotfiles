@@ -1,0 +1,22 @@
+[user]
+	name = David Obregon
+	email = david.obregon@contractor.jupiterone.com
+[alias]
+  st = status
+  ci = commit
+  br = branch
+  co = checkout
+	cob = checkout -b
+  po = pull origin
+[core]
+	excludesfile = /Users/dobregon/.gitignore_global
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[push]
+	followTags = true
+[pull]
+	rebase = true
