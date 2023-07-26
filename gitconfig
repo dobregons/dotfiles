@@ -8,6 +8,7 @@
   co = checkout
 	cob = checkout -b
   po = pull origin
+	lg = log --pretty=oneline --abbrev-commit
 [core]
 	excludesfile = /Users/dobregon/.gitignore_global
 [difftool "sourcetree"]

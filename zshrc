@@ -45,11 +45,6 @@ if [ -f $HOME/.profile ]; then
   source $HOME/.profile  # Read Mac .profile, if present.
 fi
 
-# Shell Aliases
-
-## Miscellaneous Aliases
-alias htop='sudo htop'
-
 # Shell Functions
 # qfind - used to quickly find files that contain a string in a directory
 qfind () {
@@ -80,8 +75,6 @@ source $HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highli
 echo -e "\033]6;1;bg;red;brightness;18\a"
 echo -e "\033]6;1;bg;green;brightness;26\a"
 echo -e "\033]6;1;bg;blue;brightness;33\a"
-# Aliases
-alias vi='vim'
 
 # Configure terminal to work with vim key bindings
 set -o vi
@@ -105,9 +98,19 @@ source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 # Autocompletion saml2aws
 eval "$(saml2aws --completion-script-zsh)"
 
-# Alias J1
+# Shell Aliases
+alias vi='vim'
+## Miscellaneous Aliases
+alias htop='sudo htop'
+# LS lists information about files.
+# show slashes for directories.
+alias ls='ls -laF'
+# long list format including hidden files and include unit size
+alias ll='ls -la'
+# J1 Aliases
 alias saml2awslogin='saml2aws login --idp-account="default" --verbose --force'
 alias managed-integration-upgrade='~/GitProjects/integration-engineering-toolbox/managed-integration-upgrade/managed-integration-upgrade.sh'
+alias aws-dev='aws --profile jupiterone-dev'
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform
