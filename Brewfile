@@ -15,6 +15,7 @@ brew 'gh'
 brew 'git'
 brew 'grep'
 brew 'hashicorp/tap/terraform'
+brew 'htop'
 brew 'jq' # Used for spatie/visit
 brew 'mas' # Mac App Store manager
 brew 'svn' # Needed to install fonts

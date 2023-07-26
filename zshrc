@@ -34,6 +34,9 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
+# Enable brew recognition with Apple M1
+eval $(/opt/homebrew/bin/brew shellenv)
+
 # Put any proprietary or private functions/values in ~/.private, and this will source them
 if [ -f $HOME/.private ]; then
   source $HOME/.private
@@ -44,17 +47,6 @@ if [ -f $HOME/.profile ]; then
 fi
 
 # Shell Aliases
-## Git Aliases
-alias gs='git status '
-alias ga='git add '
-alias gb='git branch '
-alias gc='git commit'
-alias gd='git diff'
-alias go='git checkout '
-alias gk='gitk --all&'
-alias gx='gitx --all'
-alias got='git '
-alias get='git '
 
 ## Miscellaneous Aliases
 alias htop='sudo htop'
@@ -72,7 +64,6 @@ if [ -f /usr/bin/vim ]; then
   export EDITOR=/usr/bin/vim
 fi
 
-# chivi
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -83,7 +74,7 @@ fi
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 # Reload the plugin to highlight the commands each time Iterm2 starts
-source /Users/dobregon/.oh-my-zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Colorise the top Tabs of Iterm2 with the same color as background
 # Just change the 18/26/33 wich are the rgb values
@@ -100,23 +91,23 @@ export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/dobregon/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/dobregon/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+# if [ -f '/Users/dobregon/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/dobregon/Downloads/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/dobregon/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/dobregon/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+# if [ -f '/Users/dobregon/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/dobregon/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-source ~/powerlevel10k/powerlevel10k.zsh-theme
+source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Autocompletion saml2aws
-eval "$(saml2aws --completion-script-zsh)"
+# eval "$(saml2aws --completion-script-zsh)"
 
 # Alias J1
-alias managed-integration-upgrade='/Users/dobregon/Documents/J1/git/integration-engineering-toolbox/managed-integration-upgrade/managed-integration-upgrade.sh'
+# alias managed-integration-upgrade='/Users/dobregon/Documents/J1/git/integration-engineering-toolbox/managed-integration-upgrade/managed-integration-upgrade.sh'
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform

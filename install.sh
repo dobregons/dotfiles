@@ -47,6 +47,8 @@ sh makesymlinks.sh
 # vim +PlugInstall +qall
 # echo "Done!"
 
+# Create git folder
+mkdir ~/GitProjects
 
 # Set macOS preferences
 # We will run this last because this will reload the shell
