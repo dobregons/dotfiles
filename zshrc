@@ -10,7 +10,6 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Uncomment following line if you want red dots to be displayed while waiting for completion
 COMPLETION_WAITING_DOTS="true"
 
-# plugins=(git osx zsh-syntax-highlighting brew repo sudo knife vagrant bundler web-search)
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
@@ -104,10 +103,11 @@ source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Autocompletion saml2aws
-# eval "$(saml2aws --completion-script-zsh)"
+eval "$(saml2aws --completion-script-zsh)"
 
 # Alias J1
-# alias managed-integration-upgrade='/Users/dobregon/Documents/J1/git/integration-engineering-toolbox/managed-integration-upgrade/managed-integration-upgrade.sh'
+alias saml2awslogin='saml2aws login --idp-account="default" --verbose --force'
+alias managed-integration-upgrade='~/GitProjects/integration-engineering-toolbox/managed-integration-upgrade/managed-integration-upgrade.sh'
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform
