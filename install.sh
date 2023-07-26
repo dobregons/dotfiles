@@ -19,6 +19,9 @@ fi
 brew tap homebrew/bundle
 brew bundle --file ./Brewfile
 
+# install nvm with some used versions
+sh install_nvm.sh
+
 # install global npm modules
 npm i -g yarn ts-node prettier yalc
 

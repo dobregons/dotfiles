@@ -81,6 +81,8 @@ set -o vi
 
 export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
 
 # The next line updates PATH for the Google Cloud SDK.
 # if [ -f '/Users/dobregon/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/dobregon/Downloads/google-cloud-sdk/path.zsh.inc'; fi

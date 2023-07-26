@@ -19,7 +19,6 @@ brew 'htop'
 brew 'jq' # Used for spatie/visit
 brew 'mas' # Mac App Store manager
 brew 'svn' # Needed to install fonts
-brew 'nvm'
 brew 'saml2aws'
 
 # Apps
