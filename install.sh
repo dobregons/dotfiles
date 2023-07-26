@@ -49,6 +49,8 @@ sh makesymlinks.sh
 
 # Create git folder
 mkdir ~/GitProjects
+# TODO: Need ssh configuration before this
+# sh clonegitrepos.sh
 
 # Set macOS preferences
 # We will run this last because this will reload the shell
