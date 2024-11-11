@@ -1,11 +1,13 @@
 # Explicitly configured $PATH variable
-PATH=/usr/local/git/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/opt/local/bin:/opt/local/sbin:/usr/X11/bin
+PATH=/usr/local/git/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/opt/local/bin:/opt/local/sbin:/usr/X11/bin:/Users/howdy/.nvm/versions/node/v18.14.2
 
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load.
 ZSH_THEME="powerlevel10k/powerlevel10k"
+# change zsh-autosuggestions color
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=60'
 
 # Uncomment following line if you want red dots to be displayed while waiting for completion
 COMPLETION_WAITING_DOTS="true"
@@ -80,6 +82,8 @@ echo -e "\033]6;1;bg;blue;brightness;33\a"
 set -o vi
 
 export NVM_DIR=~/.nvm
+# Set nvim default git editor
+export GIT_EDITOR=nvim
 source $(brew --prefix nvm)/nvm.sh
 # This loads nvm bash_completion
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  
@@ -92,7 +96,7 @@ source $(brew --prefix nvm)/nvm.sh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-source ~/.oh-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
+source ~/.oH-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -113,6 +117,22 @@ alias ll='ls -la'
 alias saml2awslogin='saml2aws login --idp-account="default" --verbose --force'
 alias managed-integration-upgrade='~/GitProjects/integration-engineering-toolbox/managed-integration-upgrade/managed-integration-upgrade.sh'
 alias aws-dev='aws --profile jupiterone-dev'
+alias managed-integration-upgrade='~/GitProjects/integration-engineering-toolbox/managed-integration-upgrade/managed-integration-upgrade.sh'
+alias stop-all-containers='docker stop $(docker ps -a -q)'
+alias remove-all-containers='docker rm $(docker ps -a -q)'
+alias start-local-db='~/db-conn.sh'
+alias clean-swap-files='find . -type f -name "*.sw[klmnop]" -delete'
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/howdy/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/howdy/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/howdy/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/howdy/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Set java version to corretto 8
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+export PATH="$JAVA_HOME/bin:$PATH:~/.local/bin"
+

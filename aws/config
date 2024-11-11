@@ -1,22 +1,89 @@
-[profile jupiterone]
+[profile jupiterone-infra]
+sso_session = jupiterone
+sso_account_id = 081157560428
+sso_role_name = Developer
 region = us-east-1
 
-[profile jupiterone-infra]
+[profile jupiterone-infra-developer]
+sso_session = jupiterone
+sso_account_id = 081157560428
+sso_role_name = Developer
 region = us-east-1
-role_arn = arn:aws:iam::081157560428:role/Developer
-source_profile = jupiterone
 
 [profile jupiterone-dev]
+sso_session = jupiterone
+sso_account_id = 564077667165
+sso_role_name = Administrator
 region = us-east-1
-role_arn = arn:aws:iam::564077667165:role/Administrator
-source_profile = jupiterone
+
+[profile jupiterone-dev-developer]
+sso_session = jupiterone
+sso_account_id = 564077667165
+sso_role_name = Developer
+region = us-east-1
 
 [profile jupiterone-prod-us]
+sso_session = jupiterone
+sso_account_id = 612791702201
+sso_role_name = Developer
 region = us-east-2
-role_arn = arn:aws:iam::612791702201:role/Administrator
-source_profile = jupiterone
+
+[profile jupiterone-prod-us-developer]
+sso_session = jupiterone
+sso_account_id = 612791702201
+sso_role_name = Developer
+region = us-east-2
+
+[profile jupiterone-prod-eu]
+sso_session = jupiterone
+sso_account_id = 043196788006
+sso_role_name = Developer
+region = eu-central-1
+
+[profile jupiterone-prod-eu-developer]
+sso_session = jupiterone
+sso_account_id = 043196788006
+sso_role_name = Developer
+region = eu-central-1
+
+[profile jupiterone-prod-statestreet]
+sso_session = jupiterone
+sso_account_id = 925768295404
+sso_role_name = Developer
+region = us-east-2
+
+[profile jupiterone-prod-statestreet-developer]
+sso_session = jupiterone
+sso_account_id = 925768295404
+sso_role_name = Developer
+region = us-east-2
+
+[profile jupiterone-prod-hsbc]
+sso_session = jupiterone
+sso_account_id = 180195598078
+sso_role_name = Developer
+region = eu-west-1
+
+[profile jupiterone-prod-hsbc-developer]
+sso_session = jupiterone
+sso_account_id = 180195598078
+sso_role_name = Developer
+region = eu-west-1
 
 [profile jupiterone-archive]
+sso_session = jupiterone
+sso_account_id = 123332750105
+sso_role_name = Developer
 region = us-east-1
-role_arn = arn:aws:iam::123332750105:role/Administrator
-source_profile = jupiterone
+
+[profile jupiterone-master]
+sso_session = jupiterone
+sso_account_id = 819684897379
+sso_role_name = Developer
+region = us-east-1
+
+[sso-session jupiterone]
+sso_start_url = https://jupiterone.awsapps.com/start/
+sso_region = us-east-1
+sso_registration_scopes = sso:account:access
+

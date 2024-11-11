@@ -23,7 +23,7 @@ brew bundle --file ./Brewfile
 sh install_nvm.sh
 
 # install global npm modules
-npm i -g yarn ts-node prettier yalc
+npm i -g yarn ts-node prettier yalc typescript
 
 # Install Powerlevel10K theme
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k

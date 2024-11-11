@@ -1,6 +1,7 @@
 [user]
 	name = David Obregon
 	email = david.obregon@contractor.jupiterone.com
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKXMDOAGBKjN1H8rUWhGS7Al4e7WTxOWJlXvHZuATaM/
 [alias]
   st = status
   ci = commit
@@ -10,14 +11,28 @@
   po = pull origin
 	lg = log --pretty=oneline --abbrev-commit
 [core]
-	excludesfile = /Users/dobregon/.gitignore_global
+  editor=nvim
+	excludesfile = /Users/howdy/.gitignore_global
+[push]
+	followTags = true
+[pull]
+	rebase = true
+[merge]
+	tool = diffconflicts
+[mergetool "diffconflicts"]
+	cmd = nvim -c DiffConflicts \"$MERGED\" \"$BASE\" \"$LOCAL\" \"$REMOTE\"
+	trustExitCode = true
+[mergetool]
+	keepBackup = false
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
 [mergetool "sourcetree"]
 	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
-[push]
-	followTags = true
-[pull]
-	rebase = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[commit]
+	gpgsign = true

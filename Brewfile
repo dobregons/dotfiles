@@ -11,6 +11,7 @@ brew 'awscli'
 brew 'bash' # Latest Bash version
 brew 'bat' # Used for spatie/visit
 brew 'coreutils' # Those that come with macOS are outdated
+brew 'docker-compose'
 brew 'gh'
 brew 'git'
 brew 'grep'
@@ -20,13 +21,18 @@ brew 'jq' # Used for spatie/visit
 brew 'mas' # Mac App Store manager
 brew 'svn' # Needed to install fonts
 brew 'saml2aws'
+brew 'ripgrep' # Needed for fuzzy search in nvim
+brew 'tmux'
 
 # Apps
 cask 'discord'
 cask 'docker'
 cask 'figma'
 cask 'google-chrome'
-cask 'iterm2'
+cask 'kitty'
+cask 'insomnia'
+# Replaced with kitty
+# cask 'iterm2'
 cask 'kap'
 cask 'microsoft-onenote'
 cask 'pastebot'
