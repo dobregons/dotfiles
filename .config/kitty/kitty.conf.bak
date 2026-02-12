@@ -2414,6 +2414,7 @@ hide_window_decorations yes
 
 
 # BEGIN_KITTY_THEME
-# Dracula
-include current-theme.conf
+# Cyberpunk Neon
+# include current-theme.conf
+include kitty-themeshttps:/github.com/dexpota/kitty-themes/themes/ENCOM.conf
 # END_KITTY_THEME
