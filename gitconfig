@@ -13,12 +13,11 @@
 [core]
   editor=nvim
 	excludesfile = /Users/howdy/.gitignore_global
+  pager = delta
 [push]
 	followTags = true
 [pull]
 	rebase = true
-[merge]
-	tool = diffconflicts
 [mergetool "diffconflicts"]
 	cmd = nvim -c DiffConflicts \"$MERGED\" \"$BASE\" \"$LOCAL\" \"$REMOTE\"
 	trustExitCode = true
@@ -36,3 +35,12 @@
 	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
 [commit]
 	gpgsign = true
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+
+[merge]
+    conflictStyle = zdiff3
