@@ -101,7 +101,6 @@ source ~/.oH-my-zsh/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Autocompletion saml2aws
 eval "$(saml2aws --completion-script-zsh)"
 
 # Shell Aliases
@@ -110,9 +109,10 @@ alias vi='vim'
 alias htop='sudo htop'
 # LS lists information about files.
 # show slashes for directories.
-alias ls='ls -laF'
+# alias ls='ls -laF'
 # long list format including hidden files and include unit size
-alias ll='ls -la'
+alias ls='gls --hyperlink=auto'
+alias ll='gls -la --hyperlink=auto'
 # J1 Aliases
 alias saml2awslogin='saml2aws login --idp-account="default" --verbose --force'
 alias managed-integration-upgrade='~/GitProjects/integration-engineering-toolbox/managed-integration-upgrade/managed-integration-upgrade.sh'
@@ -136,3 +136,4 @@ if [ -f '/Users/howdy/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/how
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 export PATH="$JAVA_HOME/bin:$PATH:~/.local/bin"
 
+export PATH=~/.npm-global/bin:$PATH
