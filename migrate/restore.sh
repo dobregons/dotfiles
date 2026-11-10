@@ -61,6 +61,7 @@ restore_secrets() {
     | tar -C "$HOME" -xkpf - 2>&1 | grep -v 'File exists' || true
   hdiutil detach -quiet "$mnt"
   rmdir "$mnt" 2>/dev/null || true
+  rewrite_home "$HOME/.kube/config" "$HOME/.ssh/config" "$HOME/.aws/config"
   if [ -d "$HOME/.ssh" ]; then
     chmod 700 "$HOME/.ssh"
     find "$HOME/.ssh" -type f ! -name '*.pub' -exec chmod 600 {} +
@@ -216,6 +217,16 @@ restore_loose() {
   rsync -a --ignore-existing "$SRC/loose/" "$HOME/GitProjects/"
 }
 
+link_old_home() {
+  [ "$OLD_HOME" = "$HOME" ] && return
+  if [ -L "$OLD_HOME" ] || [ -e "$OLD_HOME" ]; then
+    return
+  fi
+  log "Home changed ($OLD_HOME -> $HOME): linking old path so hardcoded references keep working (sudo)"
+  sudo ln -s "$HOME" "$OLD_HOME" || warn "could not create $OLD_HOME symlink"
+}
+
+link_old_home
 for step in "${STEPS[@]}"; do
   case "$step" in
     secrets) restore_secrets ;;

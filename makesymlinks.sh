@@ -29,6 +29,7 @@ copy_if_missing() {
 link zshrc ~/.zshrc
 link .p10k.zsh ~/.p10k.zsh
 link gitconfig ~/.gitconfig
+link gitignore_global ~/.gitignore_global
 link vimrc ~/.vimrc
 link vim ~/.vim
 link .tmux.conf ~/.tmux.conf

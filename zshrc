@@ -125,10 +125,10 @@ autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/howdy/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/howdy/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/howdy/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/howdy/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi
 
 # Set java version to corretto 8
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
@@ -137,7 +137,7 @@ export PATH="$JAVA_HOME/bin:$PATH:~/.local/bin"
 export PATH=~/.npm-global/bin:$PATH
 
 # bun completions
-[ -s "/Users/pato.admi/.bun/_bun" ] && source "/Users/pato.admi/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"

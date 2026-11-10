@@ -12,7 +12,7 @@
 	lg = log --pretty=oneline --abbrev-commit
 [core]
   editor=nvim
-	excludesfile = /Users/howdy/.gitignore_global
+	excludesfile = ~/.gitignore_global
   pager = delta
 [push]
 	followTags = true
