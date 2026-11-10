@@ -28,7 +28,11 @@ Installation
 ------------
 
 ``` bash
-git clone git://github.com/michaeljsmalley/dotfiles ~/dotfiles
+git clone https://github.com/dobregons/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./makesymlinks.sh
+./install.sh
 ```
+
+Secrets live in `~/.zshrc.local` (sourced by `zshrc`, never committed) and `~/.aws`.
+
+Moving to a new laptop: see [migrate/README.md](migrate/README.md).

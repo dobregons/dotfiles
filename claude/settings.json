@@ -1,0 +1,85 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "caveman@caveman": true,
+    "graph@claude-toolbox": true,
+    "dev@claude-toolbox": true,
+    "frontend-design@claude-plugins-official": true,
+    "platform-engineering@claude-toolbox": true,
+    "claude-mem@thedotmack": true,
+    "slack@claude-plugins-official": true,
+    "mattpocock-skills@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "claude-toolbox": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/pato.admi/GitProjects/claude-toolbox"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "high"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(npm run start:containers:*)",
+      "Bash(npm run start:api:*)",
+      "Bash(npm run start:executor:*)",
+      "Bash(npm run start:schedular:*)",
+      "Bash(npm run save-public-graphql-sdl:*)"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(terraform apply:*) in deploy/terraform (Protected-Scope IaC Apply — touches iam.tf, providers-k8s.tf under deploy/terraform)",
+      "Deploys or applies referencing deploy/environments/jupiterone-prod-us*.yaml (Production Deploy — matches prod namespace heuristic)"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: JupiterOne (from git remote github.com:JupiterOne/query-service.git)",
+      "**Cloud provider(s)**: AWS (aws CLI used 156× in shell history; deploy/terraform targets AWS resources — ECS, S3, DynamoDB, SQS, SNS, Lambdas, IAM)",
+      "**Repository visibility**: internal (JupiterOne/query-service, via gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured",
+      "**Default / protected branches**: main (default; protected via ruleset `Branch Require All` - active)",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Source control**: JupiterOne/query-service (github.com:JupiterOne/query-service.git) only — no additional orgs configured",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: localstack (local dev), jupiterone-dev (via saml2aws, per README) — for local development and testing only",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: deploy/environments/jupiterone-prod-us-gov-east-1.yaml, deploy/environments/jupiterone-prod-us.yaml, and deploy/terraform/* (iam.tf, s3.tf, dynamodb.tf, etc.) — any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment — includes jupiterone-prod-us-gov-east-1 and jupiterone-prod-us (deploy/environments/*.yaml)",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources under deploy/terraform/ (iam.tf, providers-k8s.tf, apiGateway.tf, autoscaling.tf) and anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development",
+      "**Trusted repo**: JupiterOne/query-service (github.com:JupiterOne/query-service.git), the working directory this session started in — internal visibility, so confidential material may be committed there but secrets/sensitive data are never cleared by visibility alone",
+      "**Org-specific CLIs**: aws (v3 SDK per ~/.claude/CLAUDE.md), saml2aws, k9s, kubectl, gh — all used routinely per shell history",
+      "None configured — no additional \"routine under <user>/ prefix\" qualifiers found"
+    ]
+  },
+  "voiceEnabled": true
+}

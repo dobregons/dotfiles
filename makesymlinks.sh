@@ -1,43 +1,51 @@
 #!/bin/bash
-############################
-# .make.sh
-# This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
-############################
+set -euo pipefail
 
-########## Variables
+dir=~/dotfiles
+olddir=~/dotfiles_old
 
-dir=~/dotfiles                    # dotfiles directory
-olddir=~/dotfiles_old             # old dotfiles backup directory
-files="zshrc .p10k.zsh. gitconfig saml2aws vimrc vim aws"    # list of files/folders to symlink in homedir
+mkdir -p "$olddir" ~/.config/cmux ~/.claude/skills ~/.agents
 
-##########
+link() {
+  local src="$dir/$1" dest="$2"
+  if [ -L "$dest" ]; then
+    rm "$dest"
+  elif [ -e "$dest" ]; then
+    mv "$dest" "$olddir/"
+  fi
+  ln -s "$src" "$dest"
+  echo "linked $dest"
+}
 
-# create dotfiles_old in homedir
-echo -n "Creating $olddir for backup of any existing dotfiles in ~ ..."
-mkdir -p $olddir
-echo "done"
+copy_if_missing() {
+  if [ -e "$2" ]; then
+    echo "kept $2"
+  else
+    cp -R "$dir/$1" "$2"
+    echo "copied $2"
+  fi
+}
 
-# change to the dotfiles directory
-echo -n "Changing to the $dir directory ..."
-cd $dir
-echo "done"
+link zshrc ~/.zshrc
+link .p10k.zsh ~/.p10k.zsh
+link gitconfig ~/.gitconfig
+link vimrc ~/.vimrc
+link vim ~/.vim
+link .tmux.conf ~/.tmux.conf
+link .config/kitty ~/.config/kitty
+link .config/zellij ~/.config/zellij
+link claude/CLAUDE.md ~/.claude/CLAUDE.md
+link claude/commands ~/.claude/commands
+link claude/agents ~/.claude/agents
+link claude/statusline-command.sh ~/.claude/statusline-command.sh
+link .agents/skills ~/.agents/skills
 
-# move any existing dotfiles in homedir to dotfiles_old directory, then create symlinks from the homedir to any files in the ~/dotfiles directory specified in $files
-for file in $files; do
-    echo "Moving any existing dotfiles from ~ to $olddir"
-    mv ~/.$file ~/dotfiles_old/
-    echo "Creating symlink to $file in home directory."
-    ln -s $dir/$file ~/.$file
+for skill in "$dir"/.agents/skills/*/; do
+  name=$(basename "$skill")
+  ln -sfn "../../.agents/skills/$name" ~/.claude/skills/"$name"
 done
 
-# updating iterm2 preferences
-# Currently, this links to /users/jared/dotfiles/preferences for PrefsCustomFolder
-# This may need to be updated programatically to prevent issues with preferences not being loaded correctly.
-
-# If you just use the symlink, anytime you change something inside iterm2, it deletes the symlink and creates a new
-# preference file com.googlecode.iterm2.plist 
-
-echo "Removing old preferences"
-rm ~/Library/Preferences/com.googlecode.iterm2.plist
-echo "creating symlink for new preferences"
-ln -s ~/dotfiles/preferences/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist
+# Apps rewrite these files atomically, which would replace a symlink with a plain file
+copy_if_missing claude/settings.json ~/.claude/settings.json
+copy_if_missing .agents/.skill-lock.json ~/.agents/.skill-lock.json
+copy_if_missing .config/cmux/cmux.json ~/.config/cmux/cmux.json

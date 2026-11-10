@@ -16,7 +16,6 @@ if test ! $(which brew); then
 fi
 
 # Install all our dependencies with bundle (See Brewfile)
-brew tap homebrew/bundle
 brew bundle --file ./Brewfile
 
 # install nvm with some used versions
@@ -34,26 +33,11 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/p
 git clone https://github.com/zsh-users/zsh-completions.git ~/.oh-my-zsh/custom/plugins/zsh-completions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 
-# Create dev directories
-mkdir $HOME/git
-
-# Install Plug for nvim
-sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-
 # Create symlinks
 sh makesymlinks.sh
 
-# Install Vim Plugins
-# TODO Figure out how to install nvim plugins
-# echo "Installing vim Plugins"
-# vim +PlugInstall +qall
-# echo "Done!"
-
-# Create git folder
-mkdir ~/GitProjects
-# TODO: Need ssh configuration before this
-# sh clonegitrepos.sh
+# Repos, nvim config, secrets and Claude data: see migrate/README.md
+mkdir -p ~/GitProjects
 
 # Set macOS preferences
 # We will run this last because this will reload the shell
