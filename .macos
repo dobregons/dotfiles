@@ -48,6 +48,15 @@ defaults write -g InitialKeyRepeat -int 15
 defaults write -g KeyRepeat -int 2
 
 ###############################################################################
+# Raycast on Cmd+Space (frees it from Spotlight)                              #
+###############################################################################
+
+defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 64 \
+  "<dict><key>enabled</key><false/><key>value</key><dict><key>parameters</key><array><integer>32</integer><integer>49</integer><integer>1048576</integer></array><key>type</key><string>standard</string></dict></dict>"
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u
+defaults write com.raycast.macos raycastGlobalHotkey -string "Command-49"
+
+###############################################################################
 # cmux                                                                        #
 ###############################################################################
 
