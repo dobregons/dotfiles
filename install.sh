@@ -16,13 +16,15 @@ if test ! $(which brew); then
 fi
 
 # Install all our dependencies with bundle (See Brewfile)
+brew tap hashicorp/tap
+brew trust --tap hashicorp/tap
 brew bundle --file ./Brewfile
 
 # install nvm with some used versions
 bash install_nvm.sh
 
 # install global npm modules
-bash -c '. "$(brew --prefix nvm)/nvm.sh" && npm i -g yarn ts-node prettier yalc typescript'
+bash -c '. "$(brew --prefix nvm)/nvm.sh" && npm i -g yarn ts-node prettier yalc typescript pnpm corepack'
 
 # Install Powerlevel10K theme
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k

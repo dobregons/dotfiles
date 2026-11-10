@@ -131,8 +131,11 @@ if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/google-cloud-sdk/
 if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/google-cloud-sdk/completion.zsh.inc"; fi
 
 # Set java version to corretto 8
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-export PATH="$JAVA_HOME/bin:$PATH:~/.local/bin"
+if /usr/libexec/java_home >/dev/null 2>&1; then
+  export JAVA_HOME=$(/usr/libexec/java_home -v 1.8 2>/dev/null || /usr/libexec/java_home)
+  export PATH="$JAVA_HOME/bin:$PATH"
+fi
+export PATH="$PATH:$HOME/.local/bin"
 
 export PATH=~/.npm-global/bin:$PATH
 
@@ -143,6 +146,6 @@ export PATH=~/.npm-global/bin:$PATH
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-. "$HOME/.local/bin/env"
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
