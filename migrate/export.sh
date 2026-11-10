@@ -3,14 +3,17 @@ set -euo pipefail
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [--secrets] [--no-loose] [OUT_DIR]
+Usage: $(basename "$0") [--secrets | --secrets-only] [--no-loose] [OUT_DIR]
 
 Snapshot this Mac for restore.sh on a new one:
   repos       unpushed branches, stashes and dirty worktrees as git bundles + patches
   loose       non-repo files under ~/GitProjects (skip with --no-loose)
   claude      ~/.claude (transcripts, memory, history, plugins) minus caches
   claude-mem  ~/.claude-mem with a consistent sqlite snapshot
-  secrets     ssh/aws/kube/npm/etc in an AES-256 encrypted DMG (only with --secrets)
+  secrets     ssh/aws/kube/npm/etc, git-ignored repo .env files, personal LaunchAgents
+              and the crontab in an AES-256 encrypted DMG (only with --secrets)
+
+--secrets-only rebuilds just the DMG (and refreshes restore.sh) in an existing OUT_DIR.
 
 OUT_DIR defaults to ~/Desktop/migration-YYYYMMDD
 EOF
@@ -19,9 +22,12 @@ EOF
 OUT=""
 WITH_SECRETS=0
 WITH_LOOSE=1
+SECRETS_ONLY=0
+REPO_EXTRA_PATHS=("GitProjects/automate-me-dev/tasks")
 while [ $# -gt 0 ]; do
   case "$1" in
     --secrets) WITH_SECRETS=1 ;;
+    --secrets-only) WITH_SECRETS=1; SECRETS_ONLY=1 ;;
     --no-loose) WITH_LOOSE=0 ;;
     -h|--help) usage; exit 0 ;;
     *) OUT="$1" ;;
@@ -39,7 +45,9 @@ mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 cp "$HERE/restore.sh" "$HERE/README.md" "$OUT/"
 chmod +x "$OUT/restore.sh"
-printf 'OLD_HOME=%q\nEXPORTED_AT=%s\n' "$HOME" "$(date +%s)" > "$OUT/manifest.env"
+if [ "$SECRETS_ONLY" = 0 ] || [ ! -f "$OUT/manifest.env" ]; then
+  printf 'OLD_HOME=%q\nEXPORTED_AT=%s\n' "$HOME" "$(date +%s)" > "$OUT/manifest.env"
+fi
 
 repo_key() { printf '%s' "$1" | tr '/' '_'; }
 
@@ -223,6 +231,59 @@ export_claude_mem() {
   log "claude-mem: $(du -sh "$OUT/claude-mem" | cut -f1)"
 }
 
+stage_repo_files() {
+  local staging="$1" repo rel key extra count=0
+  mkdir -p "$staging/.migration-repo-files"
+  while read -r repo; do
+    rel="${repo#$HOME/}"
+    key="$(repo_key "$rel")"
+    {
+      git -C "$repo" ls-files --others --ignored --exclude-standard -- \
+        ':(glob)**/.env' ':(glob)**/.env.*' ':(glob)**/*.env' \
+        ':(exclude,glob)**/node_modules/**' ':(exclude,glob)**/.worktrees/**' \
+        ':(exclude,glob)**/.claude/worktrees/**' 2>/dev/null \
+        | grep -E '(^|/)(\.env(\.[^/]*)?|[^/]+\.env)$' | grep -vE '\.(example|sample|template)(\.[a-z]+)?$|(^|/)dist/' || true
+      for extra in "${REPO_EXTRA_PATHS[@]}"; do
+        case "$extra" in "$rel"/*) [ -e "$HOME/$extra" ] && echo "${extra#$rel/}" ;; esac
+      done
+    } > "$staging/.list"
+    if [ -s "$staging/.list" ]; then
+      mkdir -p "$staging/.migration-repo-files/$key"
+      (cd "$repo" && tar -cf - -T "$staging/.list") | tar -C "$staging/.migration-repo-files/$key" -xpf -
+      echo "$rel" >> "$staging/.migration-repo-files/MANIFEST"
+      count=$((count + $(wc -l < "$staging/.list")))
+    fi
+  done < <(discover_repos)
+  rm -f "$staging/.list"
+  printf '  repo-ignored files: %s (in %s repos)\n' "$count" \
+    "$(wc -l < "$staging/.migration-repo-files/MANIFEST" 2>/dev/null | tr -d ' ' || echo 0)"
+}
+
+stage_launch_agents() {
+  local staging="$1" plist prog
+  mkdir -p "$staging/Library/LaunchAgents"
+  for plist in "$HOME"/Library/LaunchAgents/*.plist; do
+    [ -f "$plist" ] || continue
+    prog="$(plutil -extract ProgramArguments.0 raw "$plist" 2>/dev/null || plutil -extract Program raw "$plist" 2>/dev/null || true)"
+    case "$prog" in
+      "$HOME"/Library/*) continue ;;
+      "$HOME"/*) ;;
+      *) continue ;;
+    esac
+    cp -p "$plist" "$staging/Library/LaunchAgents/"
+    if [ -f "$prog" ]; then
+      mkdir -p "$staging/$(dirname "${prog#$HOME/}")"
+      cp -p "$prog" "$staging/${prog#$HOME/}"
+    fi
+    printf '  launch agent: %s\n' "$(basename "$plist")"
+  done
+  if crontab -l > "$staging/.migration-crontab" 2>/dev/null && [ -s "$staging/.migration-crontab" ]; then
+    printf '  crontab: %s lines\n' "$(wc -l < "$staging/.migration-crontab" | tr -d ' ')"
+  else
+    rm -f "$staging/.migration-crontab"
+  fi
+}
+
 export_secrets() {
   log "Secrets: building encrypted DMG"
   local staging items=() f pw pw2
@@ -233,10 +294,12 @@ export_secrets() {
   staging="$(mktemp -d)"
   chmod 700 "$staging"
   tar -C "$HOME" -cHf - \
-    --exclude '.aws/cli/cache' --exclude '.aws/sso/cache' --exclude '.DS_Store' \
+    --exclude '.aws/cli/cache' --exclude '.aws/sso/cache' --exclude '.DS_Store' --exclude '.ssh/agent' \
     --exclude '.kube/cache' --exclude '.kube/http-cache' \
     "${items[@]}" | tar -C "$staging" -xpf -
   printf '  included: %s\n' "${items[*]}"
+  stage_repo_files "$staging"
+  stage_launch_agents "$staging"
 
   while :; do
     read -rsp "  DMG password: " pw; echo
@@ -251,10 +314,12 @@ export_secrets() {
   log "Secrets: $OUT/secrets.dmg"
 }
 
-export_repos
-[ "$WITH_LOOSE" = 1 ] && export_loose
-export_claude
-export_claude_mem
+if [ "$SECRETS_ONLY" = 0 ]; then
+  export_repos
+  [ "$WITH_LOOSE" = 1 ] && export_loose
+  export_claude
+  export_claude_mem
+fi
 if [ "$WITH_SECRETS" = 1 ]; then
   export_secrets
 else

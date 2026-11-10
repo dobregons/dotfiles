@@ -45,8 +45,52 @@ rewrite_home() {
   [ "$OLD_HOME" = "$HOME" ] && return
   local f
   for f in "$@"; do
-    [ -f "$f" ] && sed -i '' "s|$OLD_HOME|$HOME|g" "$f"
+    if [ -f "$f" ]; then
+      sed -i '' "s|$OLD_HOME|$HOME|g" "$f"
+    fi
   done
+}
+
+place_repo_files() {
+  local stage="$HOME/.migration-repo-files" rel key left
+  [ -f "$stage/MANIFEST" ] || return 0
+  left="$(mktemp)"
+  while read -r rel; do
+    [ -n "$rel" ] || continue
+    key="$(printf '%s' "$rel" | tr '/' '_')"
+    if [ -d "$HOME/$rel/.git" ]; then
+      rsync -a --ignore-existing "$stage/$key/" "$HOME/$rel/"
+      rm -rf "${stage:?}/$key"
+      echo "  placed ignored files (.env etc.) into $rel"
+    else
+      echo "$rel" >> "$left"
+    fi
+  done < "$stage/MANIFEST"
+  if [ -s "$left" ]; then
+    mv "$left" "$stage/MANIFEST"
+    log "Repo .env files waiting for $(wc -l < "$stage/MANIFEST" | tr -d ' ') repos not cloned yet (placed by the repos step)"
+  else
+    rm -f "$left"
+    rm -rf "$stage"
+  fi
+}
+
+report_agents() {
+  local plist
+  for plist in "$HOME"/Library/LaunchAgents/*.plist; do
+    [ -f "$plist" ] || continue
+    if [ "$OLD_HOME" != "$HOME" ] && grep -q "$OLD_HOME" "$plist"; then
+      sed -i '' "s|$OLD_HOME|$HOME|g" "$plist"
+    fi
+    if grep -q "$HOME" "$plist" && ! launchctl list "$(basename "$plist" .plist)" >/dev/null 2>&1; then
+      warn "LaunchAgent restored but NOT started: $(basename "$plist")"
+      echo "    start it when ready: launchctl bootstrap gui/$(id -u) \"$plist\""
+    fi
+  done
+  if [ -f "$HOME/.migration-crontab" ]; then
+    warn "Old crontab saved to ~/.migration-crontab (not installed; paths may point to data not migrated)"
+    echo "    review, then install with: crontab ~/.migration-crontab"
+  fi
 }
 
 restore_secrets() {
@@ -62,6 +106,9 @@ restore_secrets() {
   hdiutil detach -quiet "$mnt"
   rmdir "$mnt" 2>/dev/null || true
   rewrite_home "$HOME/.kube/config" "$HOME/.ssh/config" "$HOME/.aws/config"
+  [ -d "$HOME/.migration-repo-files" ] && chmod 700 "$HOME/.migration-repo-files"
+  place_repo_files
+  report_agents
   if [ -d "$HOME/.ssh" ]; then
     chmod 700 "$HOME/.ssh"
     find "$HOME/.ssh" -type f ! -name '*.pub' -exec chmod 600 {} +
@@ -207,6 +254,7 @@ restore_repos() {
     echo "  $rel"
     [ -d "$dir" ] && { replay_repo "$repo" "$dir" "$branch" </dev/null || warn "$rel: replay incomplete"; }
   done < "$SRC/repos.tsv"
+  place_repo_files
   log "Repos: done ($skipped older repos skipped, use --all-repos to include them)"
 }
 

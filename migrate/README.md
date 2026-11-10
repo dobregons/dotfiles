@@ -35,3 +35,8 @@ Afterwards:
 - `/claude-mem:cloud-sync` to confirm sync status
 - `git branch -r | grep migrated/` shows branches that diverged and were not fast-forwarded
 - `.git/migration/` in a repo holds any dirty-worktree patch that did not apply cleanly
+- Git-ignored `.env` files are restored into each repo once it is cloned (from `secrets.dmg`)
+- Personal LaunchAgents are restored but not started; `restore.sh secrets` prints the `launchctl bootstrap` command
+- The old crontab is saved to `~/.migration-crontab` for review, not installed
+
+To refresh only the secrets after a full export: `export.sh --secrets-only ~/migration`
