@@ -61,7 +61,7 @@ untracked_files() {
   for other in "$@"; do
     case "$other" in "$wt"/*) specs+=(":(exclude)${other#$wt/}") ;; esac
   done
-  for d in node_modules dist build .next .turbo coverage .venv __pycache__ target .worktrees .claude/worktrees; do
+  for d in node_modules dist build .next .turbo coverage .venv __pycache__ target .terraform .worktrees .claude/worktrees; do
     specs+=(":(exclude,glob)**/$d/**" ":(exclude)$d")
   done
   git -C "$wt" ls-files --others --exclude-standard -z -- . "${specs[@]}" \
@@ -171,7 +171,7 @@ export_loose() {
     discover_repos | sed -n "s|^$PROJECTS||p" | sed 's|$|/|'
     find "$PROJECTS" -maxdepth 3 -type f -name .git -not -path '*/node_modules/*' 2>/dev/null \
       | sed "s|^$PROJECTS||; s|/\.git$|/|"
-    printf '%s\n' node_modules/ .next/ .turbo/ dist/ build/ coverage/ .venv/ __pycache__/ target/ .DS_Store
+    printf '%s\n' node_modules/ .next/ .turbo/ dist/ build/ coverage/ .venv/ __pycache__/ target/ .terraform/ .DS_Store
   } > "$excludes"
   rsync -a --prune-empty-dirs --exclude-from="$excludes" "$PROJECTS/" "$OUT/loose/"
   rm -f "$excludes"
