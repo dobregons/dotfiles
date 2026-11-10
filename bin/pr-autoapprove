@@ -1,0 +1,170 @@
+#!/bin/bash
+set -euo pipefail
+
+AUTHOR="${PR_AUTOAPPROVE_AUTHOR:-}"
+OWNER="${PR_AUTOAPPROVE_OWNER:-JupiterOne}"
+INTERVAL="${PR_AUTOAPPROVE_INTERVAL:-120}"
+SCOPE="${PR_AUTOAPPROVE_SCOPE:-requested}"
+
+LABEL="com.dobregons.pr-autoapprove"
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+LOG="$HOME/Library/Logs/pr-autoapprove.log"
+SELF="$HOME/.local/bin/pr-autoapprove"
+DOMAIN="gui/$(id -u)"
+
+usage() {
+  cat <<EOF
+usage: pr-autoapprove <on|off|status|run|dry-run|logs>
+
+  on       install launchd agent, poll every \$PR_AUTOAPPROVE_INTERVAL seconds
+  off      stop and remove launchd agent
+  status   show agent state and recent log lines
+  run      run one polling cycle now
+  dry-run  show what would be approved without approving
+  logs     follow the log file
+
+env: PR_AUTOAPPROVE_AUTHOR=$AUTHOR PR_AUTOAPPROVE_OWNER=$OWNER
+     PR_AUTOAPPROVE_INTERVAL=$INTERVAL PR_AUTOAPPROVE_SCOPE=$SCOPE (requested|all)
+EOF
+}
+
+log() {
+  local line
+  line="$(date '+%Y-%m-%d %H:%M:%S') $*"
+  if [ -n "${DRY:-}" ]; then
+    echo "$line"
+  else
+    echo "$line" | tee -a "$LOG"
+  fi
+}
+
+skip() {
+  [ -n "${DRY:-}" ] && log "skip $*"
+  return 0
+}
+
+search() {
+  gh search prs --author "$AUTHOR" --owner "$OWNER" --state open --draft=false \
+    --limit 100 --json url "$@" --jq '.[].url'
+}
+
+target_urls() {
+  if [ "$SCOPE" = "all" ]; then
+    search
+  else
+    # Approving clears the review request, so also pick up PRs already reviewed to catch follow-up commits
+    { search --review-requested=@me; search --reviewed-by=@me; } | sort -u
+  fi
+}
+
+run_once() {
+  mkdir -p "$(dirname "$LOG")"
+  local me
+  if ! me=$(gh api user --jq .login 2>&1); then
+    log "error: gh not authenticated: $me"
+    exit 1
+  fi
+
+  local url
+  for url in $(target_urls); do
+    local repo num pr head latest approved
+    repo=$(echo "$url" | sed -E 's#https://github.com/([^/]+/[^/]+)/pull/.*#\1#')
+    num=${url##*/}
+    pr=$(gh pr view "$url" --json headRefOid,reviews)
+    head=$(jq -r .headRefOid <<<"$pr")
+    latest=$(jq -r --arg me "$me" '
+      [.reviews[] | select(.author.login == $me and (.state == "APPROVED" or .state == "CHANGES_REQUESTED"))]
+      | last | .state // ""' <<<"$pr")
+    approved=$(jq -r --arg me "$me" --arg head "$head" '
+      any(.reviews[]; .author.login == $me and .state == "APPROVED" and .commit.oid == $head)' <<<"$pr")
+
+    if [ "$latest" = "CHANGES_REQUESTED" ]; then
+      skip "$repo#$num: changes requested"
+      continue
+    fi
+    if [ "$approved" = "true" ]; then
+      skip "$repo#$num: already approved @ ${head:0:7}"
+      continue
+    fi
+
+    if [ -n "${DRY:-}" ]; then
+      log "WOULD APPROVE $repo#$num @ $head"
+      continue
+    fi
+
+    if out=$(gh api "repos/$repo/pulls/$num/reviews" -f event=APPROVE -f commit_id="$head" 2>&1); then
+      log "approved $repo#$num @ $head"
+    else
+      log "error approving $repo#$num @ $head: $out"
+    fi
+  done
+}
+
+write_plist() {
+  mkdir -p "$(dirname "$PLIST")" "$(dirname "$LOG")"
+  cat >"$PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>$LABEL</string>
+  <key>ProgramArguments</key>
+  <array><string>$SELF</string><string>run</string></array>
+  <key>StartInterval</key><integer>$INTERVAL</integer>
+  <key>RunAtLoad</key><true/>
+  <key>StandardOutPath</key><string>/dev/null</string>
+  <key>StandardErrorPath</key><string>$LOG</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+    <key>PR_AUTOAPPROVE_AUTHOR</key><string>$AUTHOR</string>
+    <key>PR_AUTOAPPROVE_OWNER</key><string>$OWNER</string>
+    <key>PR_AUTOAPPROVE_SCOPE</key><string>$SCOPE</string>
+  </dict>
+</dict>
+</plist>
+EOF
+}
+
+case "${1:-}" in
+  on | run | dry-run)
+    if [ -z "$AUTHOR" ]; then
+      echo "PR_AUTOAPPROVE_AUTHOR is not set (export it in ~/.zshrc.local)" >&2
+      exit 1
+    fi
+    ;;
+esac
+
+case "${1:-}" in
+  on)
+    launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+    write_plist
+    launchctl bootstrap "$DOMAIN" "$PLIST"
+    echo "on: author=$AUTHOR owner=$OWNER scope=$SCOPE every ${INTERVAL}s"
+    ;;
+  off)
+    launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+    rm -f "$PLIST"
+    echo "off"
+    ;;
+  status)
+    if launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; then
+      echo "on ($PLIST)"
+    else
+      echo "off"
+    fi
+    if [ -f "$LOG" ]; then
+      tail -n 5 "$LOG"
+    fi
+    ;;
+  run) run_once ;;
+  dry-run) DRY=1 run_once ;;
+  logs)
+    touch "$LOG"
+    tail -f "$LOG"
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac

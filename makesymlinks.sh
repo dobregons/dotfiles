@@ -5,7 +5,7 @@ dir=~/dotfiles
 olddir=~/dotfiles_old
 
 ghostty_dir="$HOME/Library/Application Support/com.mitchellh.ghostty"
-mkdir -p "$olddir" ~/.config/cmux ~/.claude/skills ~/.agents "$ghostty_dir"
+mkdir -p "$olddir" ~/.local/bin ~/.config/cmux ~/.claude/skills ~/.agents "$ghostty_dir"
 
 link() {
   local src="$dir/$1" dest="$2"
@@ -42,6 +42,7 @@ link claude/commands ~/.claude/commands
 link claude/agents ~/.claude/agents
 link claude/statusline-command.sh ~/.claude/statusline-command.sh
 link .agents/skills ~/.agents/skills
+link bin/pr-autoapprove ~/.local/bin/pr-autoapprove
 
 for skill in "$dir"/.agents/skills/*/; do
   name=$(basename "$skill")
