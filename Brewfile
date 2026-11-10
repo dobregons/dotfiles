@@ -98,6 +98,7 @@ cask "font-open-sans"
 cask "font-roboto"
 cask "font-source-code-pro"
 cask "font-source-code-pro-for-powerline"
+cask "font-jetbrains-mono-nerd-font"
 # Web browser
 cask "google-chrome"
 # HTTP and GraphQL Client

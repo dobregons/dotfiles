@@ -39,4 +39,11 @@ defaults write com.apple.dock autohide -bool true
 
 
 
+###############################################################################
+# cmux                                                                        #
+###############################################################################
+
+defaults write com.cmuxterm.app appearanceMode -string dark
+defaults write com.cmuxterm.app appIconMode -string dark
+
 echo "Done. Note that some of these changes require a logout/restart to take effect."

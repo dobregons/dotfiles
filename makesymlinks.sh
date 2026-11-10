@@ -4,7 +4,8 @@ set -euo pipefail
 dir=~/dotfiles
 olddir=~/dotfiles_old
 
-mkdir -p "$olddir" ~/.config/cmux ~/.claude/skills ~/.agents
+ghostty_dir="$HOME/Library/Application Support/com.mitchellh.ghostty"
+mkdir -p "$olddir" ~/.config/cmux ~/.claude/skills ~/.agents "$ghostty_dir"
 
 link() {
   local src="$dir/$1" dest="$2"
@@ -35,6 +36,7 @@ link vim ~/.vim
 link .tmux.conf ~/.tmux.conf
 link .config/kitty ~/.config/kitty
 link .config/zellij ~/.config/zellij
+link .config/ghostty/config.ghostty "$ghostty_dir/config.ghostty"
 link claude/CLAUDE.md ~/.claude/CLAUDE.md
 link claude/commands ~/.claude/commands
 link claude/agents ~/.claude/agents
