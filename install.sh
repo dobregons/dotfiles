@@ -3,8 +3,8 @@
 echo "Setting up your Mac..."
 
 # Check for Oh My Zsh and install if we don't have it
-if test ! $(which omz); then
-  /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)"
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes /bin/sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)" "" --unattended
 fi
 
 # Check for Homebrew and install if we don't have it
@@ -19,10 +19,10 @@ fi
 brew bundle --file ./Brewfile
 
 # install nvm with some used versions
-sh install_nvm.sh
+bash install_nvm.sh
 
 # install global npm modules
-npm i -g yarn ts-node prettier yalc typescript
+bash -c '. "$(brew --prefix nvm)/nvm.sh" && npm i -g yarn ts-node prettier yalc typescript'
 
 # Install Powerlevel10K theme
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
